@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="43b758d8-b42b-4545-89e0-2c21a0deabeb" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="fliter_opFlow" doc:id="5d165473-49f1-41a9-a04f-89126e57e70f" >
+		<http:listener doc:name="Listener" doc:id="d6091719-8db1-4b03-9dd4-477b1f26a33b" config-ref="HTTP_Listener_config" path="/filter"/>
+		<ee:transform doc:name="Transform Message" doc:id="8482c6dd-e800-48c9-acee-cada9d33de23" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.data filter ($.employee_salary > 300000 and $.employee_age < 60 ) map((item,index) ->
+{
+    "id":item.id,
+    "employee_name":item.employee_name,
+    "employee_salary":item.employee_salary,
+    "employee_age":item.employee_age,
+    "profile_image":item.profile_image
+})
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a3073ddb-0e9e-4d2f-9f5d-ce91ed6fd654" message="#[payload]"/>
+	</flow>
+</mule>
