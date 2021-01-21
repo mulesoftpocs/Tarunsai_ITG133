@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="empjson" format="json">
+      <types:shape format="weave" example="examples/emp.json"><![CDATA[%dw 2.0
+
+type empjson = {|
+  empid: Number {"typeId": "int"}, 
+  empname: String, 
+  add: String
+|} {"example": "{\\\"empid\\\":102,\\\"empname\\\":\\\"Tarun\\\",\\\"add\\\":\\\"vskp\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xml_p" format="xml">
+      <types:example format="xml" element="employee" location="examples/emp.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#61c2bcc5-31ad-405e-990a-b32a974a85b6">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="empjson"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml_p"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
