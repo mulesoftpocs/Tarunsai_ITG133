@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e67578dc-7e51-41f6-9f7f-921b222aeb04" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="b5030ce7-ab91-4455-9416-d12dd111dc97" >
+		<file:connection workingDir="/home/tarun/mule_project/" />
+	</file:config>
+	<flow name="demoFlow" doc:id="dcd5a813-2281-49d1-beb0-33dbf623cb64" >
+		<http:listener doc:name="Listener" doc:id="f19e7d79-fe4d-4870-8660-0a02983faec7" config-ref="HTTP_Listener_config" path="/for"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6dc0664d-b0f1-4250-a102-be4448ac9108" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="042ffc0f-bbb3-4cb2-84d6-9a2950e390ec" collection="#[payload.Employees.emp]">
+			<ee:transform doc:name="Transform Message" doc:id="d5f18079-a092-44a2-b65f-36328a8f0c26" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<file:write doc:name="Write" doc:id="d86d0d53-09b1-4437-8412-ef5ea182b218" config-ref="File_Config" path="#['/home/tarun/mule_project/ap'++ payload.Employees.emp.empid ++'.json']" mode="CREATE_NEW"/>
+		</foreach>
+	</flow>
+</mule>
