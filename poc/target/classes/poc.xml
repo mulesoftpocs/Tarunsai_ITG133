@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="27f92b17-29d4-4313-bd70-0d1a801bdd30" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="pocFlow" doc:id="8a41e61b-2b2b-498f-919e-f79733e9e972" >
+		<http:listener doc:name="Listener" doc:id="68e07c50-f69b-450a-9a8f-5cc74f8e3767" config-ref="HTTP_Listener_config" path="/pc"/>
+		<logger level="INFO" doc:name="Logger" doc:id="05de1809-dc9e-4fb6-a053-b1184774e207" message="payload"/>
+		<foreach doc:name="For Each" doc:id="59841fd9-17f9-41da-8981-22df0d3d3e0d" collection="#[payload]">
+			<java:invoke-static method="" doc:name="Invoke static" doc:id="5a85eefd-9350-4355-9fd5-4759f0e76629" />
+		</foreach>
+	</flow>
+</mule>
