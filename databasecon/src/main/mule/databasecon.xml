@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0cf7e529-c298-446b-9691-cdbd477d3e1d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config3" doc:name="Database Config" doc:id="c8c12cac-5e47-4d99-91d7-68a8f16b795f" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="tarun@123" database="employee" />
+	</db:config>
+	<flow name="databaseconFlow" doc:id="3aaa1292-40fe-4e75-b9fb-8a0262bd859d" >
+		<http:listener doc:name="Listener" doc:id="0c75cc9b-383f-417f-b1ca-d5e55748e43a" config-ref="HTTP_Listener_config" path="/insert" allowedMethods="Post"/>
+		<db:insert doc:name="Insert" doc:id="423af77f-98e5-4b11-bc08-f57f3547d64f" config-ref="Database_Config3">
+			<db:sql ><![CDATA[insert into Persons(PersonID,LastName,FirstName,Address,City)values (:PersonID,:LastName,:FirstName,:Address,:City)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[#[{
+'PersonID':payload.PersonID,
+'LastName':payload.LastName,
+'FirstName':payload.FirstName,
+'Address':payload.Address,
+'City':payload.City
+}]]]]></db:input-parameters>
+		</db:insert>
+	</flow>
+</mule>
