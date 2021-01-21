@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="22b3bc0b-c5d2-4fb0-b742-899a1d18775d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="map_iterationFlow" doc:id="dd0f95a3-ebfe-443e-9da2-6299db2e0eec" >
+		<http:listener doc:name="Listener" doc:id="e3765843-1585-428d-b13a-3024dedfd897" config-ref="HTTP_Listener_config" path="/map"/>
+		<ee:transform doc:name="Transform Message" doc:id="48325101-0c22-4bcc-8d01-a313340ed1c2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "candidatedetails": payload.employee map((item,index) -> {
+        "fname":item.FirstName ++ " " ++ item.LastName
+    })
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2595ed35-6905-4e45-921c-39ed451ad0c7" message="#[payload]"/>
+	</flow>
+</mule>
