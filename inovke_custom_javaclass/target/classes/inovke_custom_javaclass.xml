@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d020f0a3-6cce-4ab0-a499-63bdd15cb566" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="inovke_custom_javaclassFlow" doc:id="2166c8e9-ea40-40a6-bf58-01bd69692fb5" >
+		<http:listener doc:name="Listener" doc:id="25ed219b-b458-4f08-8658-a317a9920510" config-ref="HTTP_Listener_config" path="/invoke"/>
+		<set-variable value="Tarun sai" doc:name="stringValue" doc:id="80937798-e0f5-4246-9fb8-f2de9e3e51d1" variableName="string"/>
+		<ee:transform doc:name="Transform Message" doc:id="8b6b0a59-5639-4408-8a3e-4b7ed262b3e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import java!mss::TestSubstring
+ 
+output application/json
+---
+{
+    "a":TestSubstring::getSubstring(vars.string)
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="96b9eb30-81b1-46ec-bb0b-9b1aabdd146f" message="#[payload]"/>
+	</flow>
+</mule>
