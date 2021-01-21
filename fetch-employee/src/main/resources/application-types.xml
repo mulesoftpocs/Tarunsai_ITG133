@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="emp" format="json">
+      <types:shape format="weave" example="examples/empresponse.json"><![CDATA[%dw 2.0
+
+type emp = {|
+  empid: Number {"typeId": "int"}, 
+  empname: String, 
+  city: String
+|} {"example": "{\\\"empid\\\":100,\\\"empname\\\":\\\"tarun\\\",\\\"city\\\":\\\"vskp\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="employees" format="json">
+      <types:shape format="weave" example="examples/emp.json"><![CDATA[%dw 2.0
+
+type employees = {|
+  empid: Number {"typeId": "int"}, 
+  empname: String, 
+  add: String
+|} {"example": "{\\\"empid\\\":102,\\\"empname\\\":\\\"Tarun\\\",\\\"add\\\":\\\"vskp\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#47aa649e-9744-446f-9af1-a9b9d665c6ee">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="emp"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#084cd23a-a29f-46d1-a3c0-bf887beb8b9c">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="emp"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
