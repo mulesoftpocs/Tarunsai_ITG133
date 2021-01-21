@@ -1,8 +1,0 @@
-{
-  "sampleData": {
-    "f4bdb6d7-717d-4f4f-9fb5-c292f51b88bb": {
-      "vars-action": "sample_data/java.dwl",
-      "payload": "sample_data/java_1.dwl"
-    }
-  }
-}
