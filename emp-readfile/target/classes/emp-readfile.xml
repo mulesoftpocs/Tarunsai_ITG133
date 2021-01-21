@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="fe4be360-ab14-4e35-8b81-dbf03bce3cb0" >
+		<file:connection workingDir="/home/tarun/TestData" />
+	</file:config>
+	<flow name="emp-readfileFlow" doc:id="8dd20748-f5f8-454d-a22b-7d85b1f8dd89" >
+		<scheduler doc:name="Scheduler" doc:id="6e33a35e-b14d-470f-9e9b-ee543d769c30" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<file:read doc:name="Readccsv" doc:id="3b34e65c-ed23-4e55-8de2-4b8334f4d7ba" config-ref="File_Config" path="/home/tarun/TestData/employee.csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="215f48b5-01b3-4cac-9ed1-bc381479e945" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (payload01,indexOfPayload01)->{
+	emp_id: payload01.id,
+	emp_name: payload01.name,
+	emp_add: payload01.address,
+	emp_sal: payload01.salary,
+	emp_phone: payload01.phone,
+	emp_mail: payload01.mail
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="49829afa-605b-430f-a4c1-57c41107e763" message="#[payload]"/>
+	</flow>
+</mule>
