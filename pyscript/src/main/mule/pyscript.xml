@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e96bab5b-40d3-4c6c-b9df-8f0bf029c14a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="pyscriptFlow" doc:id="bbfe7a8b-80d0-4009-8989-41b9b1fd2860" >
+		<http:listener doc:name="Listener" doc:id="bfc4045b-5cb7-4e1b-85d5-bb7f1d100f19" config-ref="HTTP_Listener_config" path="/run"/>
+		<ee:transform doc:name="Transform Message" doc:id="fefe6a31-dd1f-4b5b-bf6b-f174bf2b3122" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload	
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<scripting:execute engine="python" doc:name="Execute" doc:id="65556ab3-dd94-4583-9bef-838740325ab3" >
+			<scripting:code ><![CDATA[result=len(FirstName) + len(LastName)
+]]></scripting:code>
+			<scripting:parameters ><![CDATA[#[{FirstName: payload.EmployeeDetails.FirstName,LastName:payload.EmployeeDetails.LastName}]]]></scripting:parameters>
+		</scripting:execute>
+		<ee:transform doc:name="Transform Message" doc:id="8b554373-dab4-4b9a-8b7d-4b1527e06498" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Total Length":payload
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7ddd7f0a-aebb-4d3e-8453-c022669ec30e" message="#[payload]"/>
+	</flow>
+</mule>
