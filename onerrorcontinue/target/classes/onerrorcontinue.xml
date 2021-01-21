@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0bf78eae-8732-43cd-9311-fb0ee7a71bcb">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="2b5b9c1e-9295-4381-8cd7-e17b6d248839" basePath="/api/" >
+		<http:request-connection host="worldtimeapi.org" port="80" />
+	</http:request-config>
+	<flow name="onerrorcontinueFlow" doc:id="ace1a475-5512-4123-87e2-cdf7975f89f1" >
+		<http:listener doc:name="Listener" doc:id="14adf919-58c8-4a11-bd2e-ef577cba47ba" config-ref="HTTP_Listener_config" path="/{region}/{city}">
+			<http:error-response >
+				<http:body ><![CDATA[#[output text/plain --- 
+payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="c2015a3e-8c2b-4eca-9f51-8ae07997c1af" message="#[(attributes.uriParams.region default '') ++ (attributes.uriParams.city default  '')]"/>
+		<http:request method="GET" doc:name="TimmeZoneRequest" doc:id="bdc9a745-5f57-4617-ac24-1f4d888c48c2" config-ref="HTTP_Request_configuration" path="/{region}/{city}">
+			<http:body ><![CDATA[#[{
+	region:attributes.uriParams.region,
+	city:attributes.uriParams.region
+}]]]></http:body>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="77280610-1a77-432e-b314-1f1a26c4e6cd" message="End of the flow"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3c21286b-330c-4f6c-874d-c6f75cf60392" type="HTTP:NOT_FOUND">
+				<ee:transform doc:name="Transform Message" doc:id="acc505bd-9e03-4012-9654-80806f5240a6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"Time Zone details not found" ++ (error.description default '')
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
