@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="6c7327fa-ee15-4cc4-b31b-1eb53d12c761" >
+		<file:connection workingDir="/home/tarun/TestData" />
+	</file:config>
+	<file:config name="File_Config1" doc:name="File Config" doc:id="f8b8eb45-8524-4cd4-b23a-30712001d34a" >
+		<file:connection workingDir="/home/tarun/TestData" />
+	</file:config>
+	<file:config name="File_Config2" doc:name="File Config" doc:id="daad2ef8-430a-49fe-a2cd-80ec628c3715" >
+		<file:connection workingDir="/home/tarun/TestData/input" />
+	</file:config>
+	<flow name="file_convertorFlow" doc:id="899646a9-9edf-4edb-a0c5-65b4d493a9e0" >
+		<file:listener doc:name="CSV_Reader" doc:id="7859207a-1718-435a-930f-b3a9b4be6076" config-ref="File_Config2" directory="/home/tarun/TestData/input" watermarkMode="MODIFIED_TIMESTAMP" outputMimeType="application/csv" autoDelete="true" moveToDirectory="/home/tarun/TestData/output">
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</file:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="b10a5720-9471-45c4-89bd-d65d80e8da19" message="#[payload]"/>
+	</flow>
+</mule>
