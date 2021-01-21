@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="550a7f61-4373-4a15-880b-f6ed901cc5ac" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="64300c36-a24b-4cd4-a842-040458d71a29" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="tarun@123" database="Population" />
+	</db:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="8be4043f-395c-4665-a290-c1455b6fbc0e" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="tarun@123" database="Population" />
+	</db:config>
+	<flow name="crud_dbFlow" doc:id="53e03fe0-86ab-4a0b-943f-afec3d7b1cf0" >
+		<http:listener doc:name="Listener" doc:id="b924f939-6f4f-4098-91d9-f9f30e8c3bda" config-ref="HTTP_Listener_config" path="/populations" allowedMethods="GET"/>
+		<set-variable value="#[attributes.queryParams.country default '']" doc:name="Set Variable" doc:id="34629b5e-3ff4-4542-bcab-31748a16d128" variableName="countryVar"/>
+		<choice doc:name="Choice" doc:id="7254c376-293d-4c00-8ef7-05970ec17c72" >
+			<when expression="#[vars.countryVar !='']">
+				<db:select doc:name="Select" doc:id="db50410f-bdf5-497c-b277-1077026e94e1" config-ref="Database_Config1">
+					<db:sql ><![CDATA[Select * from population where Country=country]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+   country : vars.countryVar
+}]]]></db:input-parameters>
+				</db:select>
+			</when>
+			<otherwise >
+				<db:select doc:name="Select" doc:id="7c0b43ad-c5ae-49f9-a150-c6b0007d9c63" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from population]]></db:sql>
+		</db:select>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="7fab9943-9db6-4453-9b73-270b83e5db31" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
