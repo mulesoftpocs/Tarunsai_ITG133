@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d83dc822-ef6b-46ca-b14b-54d93a68b51f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="00e6139d-b8b6-4d2f-b9b2-4d10b2948ce3" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="tarun@123" database="db" />
+	</db:config>
+	<flow name="api_1Flow" doc:id="dc64533a-0fd5-42a1-87f3-d602363a3c84" >
+		<http:listener doc:name="Listener" doc:id="698add77-cab9-4259-86b4-c6b94dd010ac" config-ref="HTTP_Listener_config" path="/insert"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ef7b4578-8e60-47df-88fc-67f1a4e02218" message='"Application started....."'/>
+		<db:insert doc:name="Insert" doc:id="3fbba764-51d3-4962-aa41-36487989d7d4" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into student(stdid,stdname,city) values(:stdid,:stdname,:city)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+       stdid:payload.stdid,
+       stdname:payload.stdname,
+       city:payload.city
+  }]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="5d084c92-d991-4f12-878c-d7ec8bdce1f1" message='"Inserted successfully..........."'/>
+	</flow>
+</mule>
